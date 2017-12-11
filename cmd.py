@@ -1,47 +1,65 @@
 from os import system
 
-class cmd:
-    play = True
+var = {"YES": True, "NO": False}
+
+class compiler:
+    @classmethod
+    def compileargs(cls, args):
+        args = args.split(",")
+        for i, arg in enumerate(args):
+            if arg == "":
+                del args[i]
+                continue
+            part = ""
+            if i < len(args)-1 and args[-1][-1] != "//":
+                part = arg+","
+            elif args[-1][-1] != "\\":
+                part = args.pop(-1)+","
+            else:
+                continue
+            args[i] = part
+            args = "".join(args)
     
-    @staticmethod
-    def start():
+    @classmethod
+    def compilecode(cls, ui):
+        ui = ui.split(" ")
+        cmd = ui.pop(0)
+        args = " ".join(ui)
+        if cmd == "if":
+            cmd = "testcond"
+            assert(args[-1] = "}")
+            del args[-1]
+        if cmd == "func":
+            assert(args[-1] = "}")
+            del args[-1]
+            args = "".join("".join(args.split("(").split(")")))
+        if args != "":
+            args = cls.compileargs(args)
+        exec(cmd+"("+args+")")
+    
+    @classmethod
+    def start(cls, args):
         while True:
-            while cmd.play:
-                ui = input("$ ")
-                ui = ui.split(" ")
-                cmd = ui.pop(0)
-                args = " ".join(ui)
-                if args != "":
-                    args = args.split(",")
-                    for i in range(len(args)):
-                        part = ""
-                        if i < len(args) and args[i][len(args[i])-1] != "\\":
-                            part = args[i]+","
-                        elif args[i][len(args[i])-1] != "\\":
-                            part = pop(len(args[i]))+","
-                        else:
-                            part = args[i]
-                        args[i] = part
-                    args = "".join(args)
-                exec(cmd+"("+args+")")
+            ui = input("# ")
+            cls.compilecode(ui)
 
-    @staticmethod
-    def resume():
-        play = True
+def runfunc(nm, *args):
+    for line in var[nm].splitlines():
+        compiler.compilecode()
 
-    @staticmethod
-    def pause():
-        play = False
+def func(nm, *args):
+    code = ""
+    while True:
+        code += "\n"+input("")
+        if code.endswith("}"):
+            del code[-1]
+            break
+    var[nm] = {"args": *args, "code": code}
 
-def quit():
+def end():
     exit()
 
 def clear():
     system('cls')
 
-def cmd:
-    cmd.pause()
-
-    cmd.play()
-
-cmd.start()
+compiler.start()
