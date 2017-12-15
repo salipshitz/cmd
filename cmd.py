@@ -1,12 +1,16 @@
 from os import system
 
-var = {"YES": True, "NO": False}
+var = {"YES": True, "NO": False, "QUOTES": "'\"", "LETTERS_UPPER": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "LETTERS_LOWER": "abcdefghijklmnopqrstuvwxyz", "LETTERS": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"}
 
 class compiler:
     @classmethod
     def compileargs(cls, args):
         args = args.split(" ")
-        
+        for i, arg in enumerate(args):
+            if arg == "is":
+                args[i] = "=="
+            elif arg == "isnt":
+                args[i] = "not =="
         args = " ".join(args)
         args = args.split(",")
         for i, arg in enumerate(args):
@@ -37,9 +41,9 @@ class compiler:
         if cmd == "func":
             assert(args[-1] == "{")
             args = args[:-1]
-            print(type(args))
+            print(type(args)
             args = "".join("".join(args.split("(")).split(")"))
-            
+            args[0] = '"{}"'.format(args[0])
         if args != "":
             args = cls.compileargs(args)
         return exec(cmd+"("+args+")")
@@ -50,9 +54,17 @@ class compiler:
             ui = input("# ")
             cls.compilecode(ui)
 
+def replace(text, char, with):
+    
+
 def runfunc(nm, *args):
-    for line in var[nm].splitlines():
-        compiler.compilecode()
+    code = var[nm]["code"]
+    fargs = var[nm]["args"]
+    i = 0
+    codelns = code.splitlines()
+    while i < len(codelns):
+        compiler.compilecode(codelns[i])
+        i += 1
 
 def func(nm, *args):
     code = ""
