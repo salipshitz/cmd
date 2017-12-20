@@ -1,0 +1,26 @@
+//Piece of Cake
+import cls
+class person (first, middle, last, age) {
+    THIS.fancyName set= "--first-- "+--middle--[0]+". --last--"
+    THIS.age set= number(age)
+    THIS.greet("World")
+}
+
+_person.meth greet (otherPerson) {
+    try {
+        nm set= --otherPerson--.fancyName
+    }
+    catch --otherPerson-- type=in (_str, _string) {
+        nm set= --otherPerson--
+    }
+    print "Hello, --nm--!"
+}
+
+_person.meth birthday {
+    THIS.age.inc
+    
+}
+
+#Python
+class person:
+    def __init__(self, first, mid
