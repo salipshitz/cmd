@@ -2,6 +2,7 @@ from os import system
 from importlib import import_module
 
 meth = {}
+clas = {}
 
 def replace(text, char, withChar):
     text = text.split(char)
@@ -16,14 +17,28 @@ def runfunc(nm, args):
         compiler.compilecode(codelns[i])
         i += 1
 
-def func(nm, *args):
+def newFunc(nm, *args):
     code = ""
     while True:
         code += "\n"+input("")
         if code.endswith("}"):
-            del code[-1]
+            code = code[:-1]
             break
     var[nm] = {"args": args, "code": code}
+
+def newClass(nm, *args):
+    code = ""
+    while True:
+        code += "\n"+input("")
+        if code.endswith("}"):
+            code = code[:-1]
+            break
+    if var[nm] != None:
+        del var[nm]
+    clas[nm] = {"args": args, "init": code, "meths": {}}
+
+def newMeth(cls, nm, *args):
+    
 
 def echo(*args, sep=' ', end='\n'):
     text = ""
@@ -89,17 +104,33 @@ class compiler:
         ui = ui.split(" ")
         cmd = ui.pop(0)
         args = " ".join(ui)
+        if cmd.startsWith("_") and len(cmd.split(".")) > 1:
+            cmd = cmd.split(".")
+            args = cmd.pop(0)[1:]+", "+args
+            cmd = ".".join(cmd)
+            
         if cmd == "if":
             cmd = "testcond"
             assert(args[-1] == "{")
             args = args[:-1]
         if cmd == "func":
+            cmd = "newFunc"
             assert(args[-1] == "{")
             args = args[:-1]
-            print(type(args))
-            args = replace(args, "(", "")
+            args = replace(args, "(", ",")
             args = replace(args, ")", "")
+            args.split(" ")
             args[0] = '"{}"'.format(args[0])
+            " ".join(args)
+        if cmd == "class":
+            cmd = "newClass"
+            assert(args[-1] == "{")
+            args = args[:-1]
+            args = replace(args, "(", ",")
+            args = replace(args, ")", "")
+            args.split(" ")
+            args[0] = '"{}"'.format(args[0])
+            " ".join(args)
         if args != "":
             args = cls.compileargs(args)
         output = ""
