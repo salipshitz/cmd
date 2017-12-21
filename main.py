@@ -35,7 +35,7 @@ def newClass(nm, *args):
             break
     if var[nm] != None:
         del var[nm]
-    clas[nm] = {"args": args, "init": code, "meths": {}, "var": {}}
+    clas[nm] = {"args": args, "init": code, "meths": {}, "inst": []}
 
 def newMeth(clas_, nm, *args):
     code = ""
@@ -48,10 +48,17 @@ def newMeth(clas_, nm, *args):
 
 def init(clas_, *args):
     code = clas[clas_]["init"]
-    fargs = var[nm]["args"]
+    fargs = var[clas_]["args"]
     i = 0
     codelns = code.splitlines()
+    clas[clas_]["inst"] += {"var": {}}
     while i < len(codelns[i]):
+        cd = codelns[i].split(".")
+        if codelns[i].split(".") == "THIS":
+            del cd[0]
+            cd = ".".join(cd)
+            cd = code.split(" ")
+            cd[0] = "clas[{!r}]['inst']['var'][{!r}]".format(clas_, cd[0])
         compiler.compilecode(codelns[i])
         i += 1
 
@@ -92,9 +99,9 @@ class compiler:
             if i%2 == 1:
                 args[i] = var[arg]
         for i, arg in enumerate(args):
-            if arg == "is":
+            if arg == "is=":
                 args[i] = "=="
-            elif arg == "isnt":
+            elif arg == "isnt=":
                 args[i] = "not =="
         args = " ".join(args)
         args = args.split(",")
