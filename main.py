@@ -35,10 +35,25 @@ def newClass(nm, *args):
             break
     if var[nm] != None:
         del var[nm]
-    clas[nm] = {"args": args, "init": code, "meths": {}}
+    clas[nm] = {"args": args, "init": code, "meths": {}, "var": {}}
 
-def newMeth(cls, nm, *args):
-    
+def newMeth(clas_, nm, *args):
+    code = ""
+    while True:
+        code += "\n"+input("")
+        if code.endswith("}"):
+            code = code[:-1]
+            break
+    clas[clas_]["meths"][nm] = {"args": args, "code": code}
+
+def init(clas_, *args):
+    code = clas[clas_]["init"]
+    fargs = var[nm]["args"]
+    i = 0
+    codelns = code.splitlines()
+    while i < len(codelns[i]):
+        compiler.compilecode(codelns[i])
+        i += 1
 
 def echo(*args, sep=' ', end='\n'):
     text = ""
