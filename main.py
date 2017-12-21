@@ -46,6 +46,10 @@ def newMeth(clas_, nm, *args):
             break
     clas[clas_]["meths"][nm] = {"args": args, "code": code}
 
+def switch(thing):
+    codes = {}
+    
+
 def init(clas_, *args):
     code = clas[clas_]["init"]
     fargs = var[clas_]["args"]
