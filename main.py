@@ -17,7 +17,7 @@ def runfunc(nm, args):
         compiler.compilecode(codelns[i])
         i += 1
 
-def newFunc(nm, *args):
+def newfunc(nm, *args):
     code = ""
     while True:
         code += "\n"+input("")
@@ -26,7 +26,7 @@ def newFunc(nm, *args):
             break
     var[nm] = {"args": args, "code": code}
 
-def newClass(nm, *args):
+def newclass(nm, *args):
     code = ""
     while True:
         code += "\n"+input("")
@@ -37,7 +37,7 @@ def newClass(nm, *args):
         del var[nm]
     clas[nm] = {"args": args, "init": code, "meths": {}, "inst": []}
 
-def newMeth(clas_, nm, *args):
+def newmeth(clas_, nm, *args):
     code = ""
     while True:
         code += "\n"+input("")
@@ -47,9 +47,21 @@ def newMeth(clas_, nm, *args):
     clas[clas_]["meths"][nm] = {"args": args, "code": code}
 
 def switch(thing):
-    codes = {}
+    conds = {}
+    default
+    while True:
+        cond = input("")
+        assert(cond.endswith("{"))
+        cond = cond[:-1]
+        code = ""
+        while True:
+            code += '\n'+input("\t")
+            if code.endswith("}"):
+                code = code[:-1]
+                break
+        if cond == 'default':
+            
     
-
 def init(clas_, *args):
     code = clas[clas_]["init"]
     fargs = var[clas_]["args"]
@@ -88,9 +100,18 @@ def get_module(module):
     meth += mod.meth
 
 var = {"YES": True, "NO": False, "QUOTES": "'\"", "LETTERS_UPPER": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "LETTERS_LOWER": "abcdefghijklmnopqrstuvwxyz", "LETTERS": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"}
-meth = {"print": print, "echo": echo, "func": func, "import": get_module}
+meth = {"print": print,
+        "echo": echo,
+        "func": newfunc, "import": get_module}
 
 class compiler:
+    @classmethod
+    def compilelns(cls, ui):
+        i = 0
+        codelns = ui.splitlines()
+        while i < len(codelns):
+            
+    
     @classmethod
     def compileargs(cls, args):
         args = args.split("**")
