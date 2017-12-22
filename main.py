@@ -1,5 +1,30 @@
 from os import system
+import sys
 from importlib import import_module
+
+sys.tracebacklimit = None
+
+def excepthook(err, value, tb):
+    err = repr(err).split("'")
+    err = err[1]
+    err = err.split('.')
+    if len(err) > 1:
+        err = err[1]
+    else:
+        raise CompilerE
+        err = err[0]
+    if str(value) is not None or '':
+        print(err, value, sep=': ')
+    else:
+        print(err)
+
+sys.excepthook = excepthook
+
+class BaseE(Exception):
+    """Base class for errors"""
+
+class CompilerE(BaseE):
+    """Class for compiler errors"""
 
 meth = {}
 clas = {}
@@ -48,7 +73,7 @@ def newmeth(clas_, nm, *args):
 
 def switch(thing):
     conds = {}
-    default
+    default = ''
     while True:
         cond = input("")
         assert(cond.endswith("{"))
@@ -60,8 +85,10 @@ def switch(thing):
                 code = code[:-1]
                 break
         if cond == 'default':
+            default = code
+        else:
+            conds[cond] = code
             
-    
 def init(clas_, *args):
     code = clas[clas_]["init"]
     fargs = var[clas_]["args"]
@@ -99,18 +126,23 @@ def get_module(module):
     mod = import_module(module)
     meth += mod.meth
 
+def raiseE(E):
+    exec('raise '+E)
+
 var = {"YES": True, "NO": False, "QUOTES": "'\"", "LETTERS_UPPER": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "LETTERS_LOWER": "abcdefghijklmnopqrstuvwxyz", "LETTERS": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"}
 meth = {"print": print,
         "echo": echo,
-        "func": newfunc, "import": get_module}
+        "func": newfunc,
+        "import": get_module,
+        "raise": raiseE}
 
 class compiler:
     @classmethod
     def compilelns(cls, ui):
         i = 0
         codelns = ui.splitlines()
-        while i < len(codelns):
-            
+        #while i < len(codelns):
+         #   pass
     
     @classmethod
     def compileargs(cls, args):
@@ -151,7 +183,7 @@ class compiler:
         ui = ui.split(" ")
         cmd = ui.pop(0)
         args = " ".join(ui)
-        if cmd.startsWith("_") and len(cmd.split(".")) > 1:
+        if cmd.startswith("_") and len(cmd.split(".")) > 1:
             cmd = cmd.split(".")
             args = cmd.pop(0)[1:]+", "+args
             cmd = ".".join(cmd)
