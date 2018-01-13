@@ -129,12 +129,29 @@ def get_module(module):
 def raiseE(E):
     exec('raise '+E)
 
+def give(x):
+    return x
+
+def add(x, y):
+    return x+y
+
+def sub(x, y):
+    return x-y
+
+def mult(x, y):
+    return x*y
+
+def div(x, y):
+    return x/y
+
 var = {"YES": True, "NO": False, "QUOTES": "'\"", "LETTERS_UPPER": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "LETTERS_LOWER": "abcdefghijklmnopqrstuvwxyz", "LETTERS": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"}
 meth = {"print": print,
         "echo": echo,
         "func": newfunc,
         "import": get_module,
-        "raise": raiseE}
+        "raise": raiseE,
+        "return": give,
+        "python": eval}
 
 class compiler:
     @classmethod
@@ -153,8 +170,10 @@ class compiler:
         args = " ".join(args)
         args = args.split("--")
         for i, arg in enumerate(args):
-            if i%2 == 1:
-                args[i] = var[arg]
+            arg = arg.split(" ")
+            if i > 0:
+                arg[0] = str(var[arg[0]])
+            args[i] = " ".join(arg)
         for i, arg in enumerate(args):
             if arg == "is=":
                 args[i] = "=="
@@ -183,6 +202,11 @@ class compiler:
         ui = ui.split(" ")
         cmd = ui.pop(0)
         args = " ".join(ui)
+        if len(ui) > 0:
+            if ui[0] == "set=":
+                del ui[0]
+                var[cmd] = cls.compilecode("return "+" ".join(ui))
+                return
         if cmd.startswith("_") and len(cmd.split(".")) > 1:
             cmd = cmd.split(".")
             args = cmd.pop(0)[1:]+", "+args
@@ -193,16 +217,14 @@ class compiler:
             assert(args[-1] == "{")
             args = args[:-1]
         if cmd == "func":
-            cmd = "newFunc"
             assert(args[-1] == "{")
             args = args[:-1]
             args = replace(args, "(", ",")
             args = replace(args, ")", "")
-            args.split(" ")
-            args[0] = '"{}"'.format(args[0])
-            " ".join(args)
+            args = args.split(" ")
+            args[0] = '"'+args[0]+'"'
+            args = " ".join(args)
         if cmd == "class":
-            cmd = "newClass"
             assert(args[-1] == "{")
             args = args[:-1]
             args = replace(args, "(", ",")
@@ -213,10 +235,15 @@ class compiler:
         if args != "":
             args = cls.compileargs(args)
         output = ""
+        args = eval(args)
         try:
             output = runfunc(cmd, args)
         except:
-            output = meth[cmd](args)
+            if (len(args) == 0):
+                output = meth[cmd]()
+            else:
+                output = meth[cmd](args)
+        return output
 
     @classmethod
     def start(cls):
