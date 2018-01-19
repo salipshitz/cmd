@@ -13,10 +13,10 @@ def excepthook(err, value, tb):
     else:
         raise CompilerE
         err = err[0]
-    if str(value) is not None or '':
+    if str(value) not in (None, ''):
         print(err, value, sep=': ')
     else:
-        print(err)
+        print(err, value.__doc__, sep=': ')
 
 sys.excepthook = excepthook
 
@@ -24,7 +24,13 @@ class BaseE(Exception):
     """Base class for errors"""
 
 class CompilerE(BaseE):
-    """Class for compiler errors"""
+    """Compiler failed"""
+
+class SyntaxE(BaseE):
+    """Invalid syntax."""
+
+class NameE(BaseE):
+    """Name does not exist"""
 
 meth = {}
 clas = {}
@@ -106,6 +112,8 @@ def init(clas_, *args):
         i += 1
 
 def echo(*args, sep=' ', end='\n'):
+    for i, arg in enumerate(args):
+        args[i] = str(arg)
     text = ""
     for arg in args:
         text += arg
@@ -132,17 +140,11 @@ def raiseE(E):
 def give(x):
     return x
 
-def add(x, y):
-    return x+y
+def raiseE(e):
+    raise e
 
-def sub(x, y):
-    return x-y
-
-def mult(x, y):
-    return x*y
-
-def div(x, y):
-    return x/y
+def delvar(x):
+    del x
 
 var = {"YES": True, "NO": False, "QUOTES": "'\"", "LETTERS_UPPER": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "LETTERS_LOWER": "abcdefghijklmnopqrstuvwxyz", "LETTERS": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"}
 meth = {"print": print,
@@ -151,7 +153,10 @@ meth = {"print": print,
         "import": get_module,
         "raise": raiseE,
         "return": give,
-        "python": eval}
+        "python": eval,
+        "quit": exit,
+        "raise": raiseE,
+        "del": delvar}
 
 class compiler:
     @classmethod
@@ -172,7 +177,7 @@ class compiler:
         for i, arg in enumerate(args):
             arg = arg.split(" ")
             if i > 0:
-                arg[0] = str(var[arg[0]])
+                arg[0] = str(str(var[arg[0]]))
             args[i] = " ".join(arg)
         for i, arg in enumerate(args):
             if arg == "is=":
@@ -190,7 +195,6 @@ class compiler:
                 part = arg+","
             else:
                 continue
-            print(i, len(args))
             args[i] = part
         args = "".join(args)
         return args
@@ -235,14 +239,13 @@ class compiler:
         if args != "":
             args = cls.compileargs(args)
         output = ""
-        args = eval(args)
         try:
             output = runfunc(cmd, args)
         except:
             if (len(args) == 0):
-                output = meth[cmd]()
+                output = eval("meth[cmd]()")
             else:
-                output = meth[cmd](args)
+                output = eval("meth[cmd]("+args+")")
         return output
 
     @classmethod
